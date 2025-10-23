@@ -14,11 +14,11 @@ pyautogui.FAILSAFE = True
 pyautogui.PAUSE = 0.3 
 def run_powershell(cmd): 
   try: 
-  result = subprocess.run(["powershell", "-Command", cmd], 
-  capture_output=True, text=True, timeout=10) 
-  return result.returncode, result.stdout.strip(), result.stderr.strip() 
+    result = subprocess.run(["powershell", "-Command", cmd], 
+    capture_output=True, text=True, timeout=10) 
+    return result.returncode, result.stdout.strip(), result.stderr.strip() 
   except Exception as e: 
-  return 1, "", str(e) 
+    return 1, "", str(e) 
 def take_screenshot(name): 
   out = Path("out") 
   out.mkdir(exist_ok=True) 
