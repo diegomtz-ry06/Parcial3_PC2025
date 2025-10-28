@@ -1,1 +1,0 @@
-Creo que se debe de borrar esta carpeta ya que funciona con los dos archivos en el la carpeta Scripts

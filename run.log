@@ -1,0 +1,13 @@
+2025-10-28 02:03:59,248 INFO root -> Inicio del examen
+2025-10-28 02:04:00,611 INFO root -> Comando ejecutado: Get-Date
+2025-10-28 02:04:00,611 INFO root -> Resultado del Comando: Tuesday, October 28, 2025 2:04:00 AM
+2025-10-28 02:04:01,688 INFO root -> Comando ejecutado: Get-Location
+2025-10-28 02:04:01,688 INFO root -> Resultado del Comando: Path                                                         
+----                                                         
+C:\Users\lalot\Documentos\GitHub\Parcial3_PC2025\Scripts\dist
+2025-10-28 02:04:01,688 INFO root -> Se empezo a contestar el forms
+2025-10-28 02:04:16,523 INFO root -> Se guardo la captura ScreenShots\Antes_20251028T080415Z.png
+2025-10-28 02:04:29,641 INFO root -> Se guardo la captura ScreenShots\Durante_20251028T080429Z.png
+2025-10-28 02:04:32,301 INFO root -> Se guardo la captura ScreenShots\Despues_20251028T080431Z.png
+2025-10-28 02:04:32,302 INFO root -> Se termino de contestar el forms
+2025-10-28 02:04:32,303 INFO root -> Fin del examen
