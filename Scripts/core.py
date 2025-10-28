@@ -12,7 +12,6 @@ pyautogui.PAUSE = 0.3
 
 #Funcion que ejecuta comandos de powershell desde python y devuelve el codigo de salida, la salida estandar y el error estandar
 def run_powershell(cmd):
-    logger = logging.getLogger(__name__)
     try:
         result = subprocess.run(["powershell", "-Command", cmd],
         capture_output=True, text=True, timeout=10)
