@@ -1,74 +1,97 @@
-# core.py
-import subprocess
-import pyautogui
+#Archivo Core.py el cual realiza la logica
+import logging 
+import pyautogui 
 import time
-import logging
+import os
+import subprocess
+from datetime import datetime
 from pathlib import Path
 
 pyautogui.FAILSAFE = True 
-pyautogui.PAUSE = 0.5
+pyautogui.PAUSE = 0.3 
 
+#Funcion que ejecuta comandos de powershell desde python y devuelve el codigo de salida, la salida estandar y el error estandar
 def run_powershell(cmd):
+    logger = logging.getLogger(__name__)
     try:
-        # Ejecuta el comando de PowerShell
         result = subprocess.run(["powershell", "-Command", cmd],
-                                capture_output=True, text=True, timeout=10, check=True, encoding='utf-8')
-        return 0, result.stdout.strip(), result.stderr.strip()
-    except subprocess.CalledProcessError as e:
-        logging.error(f"Error de PowerShell al ejecutar '{cmd}': {e.stderr.strip()}")
-        return e.returncode, e.stdout.strip(), e.stderr.strip()
-    except subprocess.TimeoutExpired:
-        logging.error(f"Timeout ejecutando PowerShell: '{cmd}'")
-        return 1, "", "Timeout (10s) alcanzado."
+        capture_output=True, text=True, timeout=10)
+        return result.returncode, result.stdout.strip(), result.stderr.strip()
     except Exception as e:
-        logging.error(f"Error inesperado de subprocess: {e}")
         return 1, "", str(e)
 
+#Funcion que toma screenshot de la pantalla actual y la guarda en una carpeta ScreenShots
+def take_screenshot(name): 
+  try:
+    out = Path("ScreenShots") 
+    out.mkdir(exist_ok=True) 
+    ts = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ") 
+    path = out / f"{name}_{ts}.png" 
+    img = pyautogui.screenshot() 
+    img.save(path)
+    logging.info(f"Se guardo la captura {path}")
+    return path 
+  except Exception as e:
+     logging.error(f"Error de captura de pantalla:{e}")
 
-def take_screenshot(name):
-    try:
-        out_dir = Path("out")
-        out_dir.mkdir(exist_ok=True)
-        path = out_dir / f"{name}.png"
-        img = pyautogui.screenshot()
-        img.save(path)
-        logging.info(f"Captura de pantalla guardada en: {path}")
-        return str(path)
-    except Exception as e:
-        logging.error(f"No se pudo tomar la captura de pantalla '{name}': {e}")
-        return None
-
-
-def fill_form(data, start_coords):
-    logging.info(f"Iniciando llenado de formulario en coordenadas: {start_coords}")
-    try:
-        # 1. Captura antes de hacer nada
-        take_screenshot("before")
-        # 2. Click en las coordenadas de inicio
-        pyautogui.click(start_coords[0], start_coords[1])
-        logging.info(f"Click en {start_coords}")
-        # 3. Llenar "nombre" y tabular
-        pyautogui.typewrite(data["nombre"])
-        pyautogui.press("tab")
-        logging.info(f"Nombre escrito: {data['nombre']}")
-        # 4. Llenar "correo" y tabular
-        pyautogui.typewrite(data["correo"])
-        pyautogui.press("tab")
-        logging.info(f"Correo escrito: {data['correo']}")
-        # 5. Captura durante el llenado
-        take_screenshot("during")
-        # 6. Llenar "equipo" y enviar
-        pyautogui.typewrite(data["equipo"])
+#Funcion que automatiza el llenado de un forms
+def fill_forms(coordenadas):
+  # Se utilizo una resolucion de 1920 x 1080 para la pruba de este script y las coordenadas (519,513)
+  try: 
+    logging.info("Se empezo a contestar el forms")
+  #Abre una nueva pestana de Microsoft Edge
+    os.system("start msedge")
+    time.sleep(3)
+    pyautogui.typewrite("https://forms.office.com/pages/responsepage.aspx?id=EZDKymp73kSGHwlaLKiDt4wXC_YfIWlGrUcWrbkA4-NURjFZQjdBMkJNSlkwQkVCM0c2V0cyWTVHNSQlQCNjPTEu&classId=31f16070-5361-4de8-9624-98f60a6f24ae&assignmentId=c865c317-1511-4faa-8a46-565ecf1dd392&submissionId=d9a59b82-b4c2-7d09-d320-fac3711bd2c4&route=shorturl")
+    pyautogui.press("enter")
+    #Contesta el apartado de la fecha en el forms
+    time.sleep(9)
+    take_screenshot("Antes")
+    pyautogui.click(coordenadas[0],coordenadas[1], duration=0.1)
+    time.sleep(2)
+    pyautogui.press("enter")
+  #Contesta el apartado de los nombres en el forms
+    nombres = ["Diego Francisco Martinez Reyes", "Eduardo Tamez Olivo", "Daniel Martinez Viruega"]
+    time.sleep(2)
+    pyautogui.press("tab")
+    for i in nombres:
+        pyautogui.typewrite(i)
         pyautogui.press("enter")
-        logging.info(f"Equipo escrito: {data['equipo']} y 'Enter' presionado")
-        # 7. Esperar 1 segundo para que la página reacciones
-        time.sleep(1)
-        # 8. Captura final
-        take_screenshot("after")
-        
-        logging.info("Llenado de formulario completado exitosamente.")
-    
-    except Exception as e:
-        logging.error(f"Error durante la automatización con pyautogui: {e}")
-        # Tomar una captura de pantalla del error si es posible
-        take_screenshot("error_state")
+  # Suma las matriculas y contesta el apartado de las matriculas en el forms
+    Matriculas = [2110198,2118638,2077767]
+    sum = 0
+    time.sleep(1)
+    pyautogui.press("tab")
+    for i in Matriculas:
+       sum +=i
+    pyautogui.typewrite(str(sum))
+  # Contesta el apartado de las opciones en el forms
+    time.sleep(1)
+    pyautogui.press("tab")
+    time.sleep(1)
+    pyautogui.press("down")
+  # Envia el formulario
+    time.sleep(1)
+    pyautogui.press("tab")
+    take_screenshot("Durante")
+  #pyautogui.press("enter") <<-- descomentar esto cuando no se necesite
+    take_screenshot("Despues")
+    logging.info("Se termino de contestar el forms")
+  except Exception as e:
+     logging.error(f"Error al llenar el forms: {e}")
+
+def core_main(): 
+    logging.basicConfig(filename="run.log", level=logging.INFO, 
+    format="%(asctime)s %(levelname)s %(name)s -> %(message)s", encoding="utf-8") 
+    logging.info("Inicio del examen") 
+    start_coords = (519,513)
+    comandos = ["Get-Date", "Get-Location"]
+    for com in comandos:
+        code, out, err = run_powershell(com)
+        logging.info(f'Comando ejecutado: {com}')
+        logging.info(f"Resultado del Comando: {out}")
+        if err:
+            logging.warning(f"PS code: {code}")
+            logging.error(f"PS error: {err}")
+    fill_forms(start_coords) 
+    logging.info("Fin del examen")
